@@ -2,11 +2,14 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="only light">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>おさかな雑学ダッシュ</title>
 <style>
   :root { --deep:#063a6b; --sea:#0a84b8; --ink:#10324f; --sun:#ffd23f; --coral:#ff6b5e; --mint:#2fc78f; --paper:#fffdf5; }
   * { box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; text-size-adjust:100%; color-scheme:only light; }
+  #probe { position:absolute; visibility:hidden; font-size:100px; line-height:1; white-space:nowrap; left:0; top:0; }
   html,body { margin:0; height:100%; overflow:hidden; background:var(--deep); touch-action:manipulation; overscroll-behavior:none;
     font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif; color:var(--ink); -webkit-user-select:none; user-select:none; }
   #wrap { position:fixed; inset:0; overflow:hidden; }
@@ -15,24 +18,25 @@
   .overlay { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; padding:24px 20px; text-align:center; background:rgba(6,58,107,.86); color:#fff; }
   .overlay.show { display:flex; }
   #title { justify-content:center; gap:18px; }
-  #title h1 { margin:0; font-size:42px; line-height:1.2; color:var(--sun); letter-spacing:.04em; }
-  #title p { margin:0; font-size:18px; line-height:1.7; }
-  button.main { border:0; border-radius:999px; background:var(--sun); color:var(--ink); font:inherit; font-size:22px; font-weight:700; padding:14px 44px; cursor:pointer; box-shadow:0 5px 0 #c99a10; }
+  #title h1 { margin:0; font-size:calc(42px*var(--k,1)); line-height:1.2; color:var(--sun); letter-spacing:.04em; }
+  #title p { margin:0; font-size:calc(18px*var(--k,1)); line-height:1.7; }
+  button.main { border:0; border-radius:999px; background:var(--sun); color:var(--ink); font:inherit; font-size:calc(22px*var(--k,1)); font-weight:700; padding:14px 44px; cursor:pointer; box-shadow:0 5px 0 #c99a10; }
   button.main:active { transform:translateY(3px); box-shadow:0 2px 0 #c99a10; }
-  #sound { position:absolute; right:8px; top:6px; z-index:5; width:64px; height:38px; white-space:nowrap; border:0; border-radius:10px; background:rgba(255,255,255,.22); color:#fff; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
-  #result h2 { margin:6px 0 2px; font-size:32px; color:var(--sun); }
-  #score { font-size:20px; margin-bottom:10px; }
+  #sound { position:absolute; right:8px; top:6px; z-index:5; width:64px; height:38px; white-space:nowrap; border:0; border-radius:10px; background:rgba(255,255,255,.22); color:#fff; font:inherit; font-size:calc(13px*var(--k,1)); font-weight:700; cursor:pointer; }
+  #result h2 { margin:6px 0 2px; font-size:calc(32px*var(--k,1)); color:var(--sun); }
+  #score { font-size:calc(20px*var(--k,1)); margin-bottom:10px; }
   #list { flex:1; min-height:0; width:100%; overflow-y:auto; touch-action:pan-y; text-align:left; -webkit-user-select:text; user-select:text; }
-  .item { background:var(--paper); color:var(--ink); border-radius:12px; padding:10px 12px; margin-bottom:8px; font-size:15px; line-height:1.5; }
-  .item b { display:block; font-size:16px; }
+  .item { background:var(--paper); color:var(--ink); border-radius:12px; padding:10px 12px; margin-bottom:8px; font-size:calc(15px*var(--k,1)); line-height:1.5; }
+  .item b { display:block; font-size:calc(16px*var(--k,1)); }
   .item .ok { color:#14865d; font-weight:700; } .item .ng { color:#d23f33; font-weight:700; }
-  .item a { color:#0a6c9c; font-size:13px; }
-  .credit { font-size:15px; line-height:1.9; margin-top:6px; flex:none; }
+  .item a { color:#0a6c9c; font-size:calc(13px*var(--k,1)); }
+  .credit { font-size:calc(15px*var(--k,1)); line-height:1.9; margin-top:6px; flex:none; }
   .credit a { color:#ffe680; font-weight:700; }
   #result button.main { margin-top:12px; flex:none; }
 </style>
 </head>
 <body>
+<span id="probe" aria-hidden="true">漢</span>
 <div id="wrap"><div id="stage">
   <canvas id="c"></canvas>
   <button id="sound" aria-label="音のオンとオフ">音 ON</button>
@@ -69,6 +73,8 @@ const bubbles = Array.from({length: reduced ? 8 : 26}, () => ({ x:Math.random()*
 function fit() {
   const box = document.getElementById('wrap'), vv = window.visualViewport;
   const vw = Math.min(box.clientWidth, vv ? vv.width : box.clientWidth), vh = Math.min(box.clientHeight, vv ? vv.height : box.clientHeight);
+  const pw = document.getElementById('probe').offsetWidth;
+  document.documentElement.style.setProperty('--k', pw > 102 ? String(100/pw) : '1');
   scale = Math.min(vw/W, vh/H);
   stage.style.transform = `translate(${(vw-W*scale)/2}px,${(vh-H*scale)/2}px) scale(${scale})`;
   const dpr = Math.min(devicePixelRatio || 1, 3);
